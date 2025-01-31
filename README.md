@@ -1,5 +1,3 @@
-# Diagnostic-indication-generation
-
 # Brain MRI Diagnostic Indication Generation Model
 
 ## Overview
