@@ -26,7 +26,7 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 - **Transformer Decoder** for **text generation**
 
 ## Dataset
-- **Primary Dataset**: Private hospital MRI dataset (requires annotation)
+- **Primary Dataset**: Private Low Field MRI dataset (requires annotation)
 
 ## Sample Inference Result
 
