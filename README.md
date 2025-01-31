@@ -85,3 +85,50 @@ The generated output correctly identifies a hemorrhagic lesion in the parietal r
 
 
 The model correctly detects cortical dysplasia in the right temporal lobe and prior lobectomy, aligning with the true diagnosis of dysplasia and epilepsy.
+
+
+
+# Function to create a flowchart without arrows
+def draw_flowchart_no_arrows():
+    fig, ax = plt.subplots(figsize=(8, 10))
+    ax.set_xlim(0, 10)
+    ax.set_ylim(0, 12)
+    ax.axis("off")
+
+    # Define positions for each stage in the flowchart
+    positions = {
+        "Input": (5, 11),
+        "Preprocessing": (5, 9.5),
+        "Feature Extraction": (5, 8),
+        "Text Generation": (5, 6.5),
+        "NLP Refinement": (5, 5),
+        "Output": (5, 3.5),
+        "Deployment": (7.5, 2),
+        "Evaluation": (2.5, 2)
+    }
+
+    # Define labels for each stage
+    labels = {
+        "Input": "MRI Scan Input\n(DICOM/NIfTI)",
+        "Preprocessing": "Preprocessing & Segmentation\n(Normalization, Enhancement)",
+        "Feature Extraction": "Feature Extraction\n(Vision Transformer - ViT)",
+        "Text Generation": "Text Generation\n(Transformer Decoder)",
+        "NLP Refinement": "Clinical NLP Refinement\n(BioBERT)",
+        "Output": "Final Diagnostic Indication",
+        "Deployment": "Deployment\n(FastAPI, AWS SageMaker)",
+        "Evaluation": "Evaluation Metrics\n(BLEU, ROUGE, F1-Score)"
+    }
+
+    # Draw rectangles for each stage with rounded edges (without arrows)
+    for key, pos in positions.items():
+        ax.add_patch(FancyBboxPatch((pos[0] - 1.8, pos[1] - 0.4), 3.6, 0.8,
+                                     boxstyle="round,pad=0.3", edgecolor="black",
+                                     facecolor="lightblue", linewidth=2))
+        ax.text(pos[0], pos[1], labels[key], fontsize=10, ha="center", va="center", fontweight="bold")
+
+    plt.title("Flowchart: AI-Powered Brain MRI Diagnostic System (No Arrows)", fontsize=12, fontweight="bold")
+    plt.show()
+
+# Call function to draw the flowchart without arrows
+draw_flowchart_no_arrows()
+
