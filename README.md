@@ -28,3 +28,21 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 
 ## Dataset
 - **Primary Dataset**: Private hospital MRI dataset (requires annotation)
+
+## Sample Inference Result
+
+Below is an example of the model's generated diagnostic indication based on a Brain MRI input.
+
+### **Input MRI Scan**
+![Brain MRI Example](/RS036.png)
+
+### **Generated Indication**
+"Potential ischemic lesion detected in the frontal lobe region. The lesion appears hyperintense compared to surrounding tissues, suggesting an acute or subacute infarct. Clinical correlation with patient history of transient ischemic attacks (TIAs) is recommended."
+
+
+### **True Indication (For Comparison)**
+"Location of stroke not confirmed. May be frontal lobe. Patient also had subsequent TIAs."
+
+
+The model-generated output closely aligns with the true indication, demonstrating its capability in detecting abnormalities.
+
