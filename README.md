@@ -17,7 +17,7 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 | **Feature Extraction** | Cross-Attention Mechanisms |
 | **Retrieval System** | FAISS / Pinecone (Case Retrieval), LangChain (Literature Search) |
 | **Language Model (LLM for Diagnosis)** | BioBERT |
-| **Deployment & Acceleration** | NVIDIA A5000 GPUs |
+| **Deployment & Acceleration** | 5 NVIDIA A5000 GPUs |
 
 
 ## Model Architecture
