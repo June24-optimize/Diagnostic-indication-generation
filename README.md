@@ -28,7 +28,7 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 - **Transformer Decoder** for **text generation**
 
 ### **Model Framework**
-![Flowchart](/Framework.png)
+![Flowchart](/framework.png)
 
 ### Key Features:**
 
