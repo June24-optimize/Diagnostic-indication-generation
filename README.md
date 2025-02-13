@@ -30,7 +30,7 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 ### **Model Framework**
 ![Flowchart](/framework.png)
 
-### Key Features:**
+### **Key Components:**
 
 - **Multimodal Retrieval:**  
   - Uses **image embeddings** + **clinical keywords** to search a **vector database** of past cases & medical literature.  
