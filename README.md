@@ -10,23 +10,50 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 - **End-to-End Pipeline**: Includes preprocessing, model inference, and result visualization.
 - **Cloud Deployment Ready**: Compatible with FastAPI and TensorFlow Serving for production use.
 
-## System Architecture
-1. **Input**: MRI scan (DICOM/NIfTI/PNG)
-2. **Preprocessing**:
-   - Convert DICOM/NIfTI to PNG/JPEG
-   - Apply skull stripping and normalization
-3. **Feature Extraction**:
-   - Vision Transformer (ViT) extracts image embeddings
-4. **Indication Generation**:
-   - Transformer decoder generates a textual medical indication
-5. **Output**: Structured diagnostic text based on the MRI scan
+### **Tech Stack:**
+| Component | Technology |
+|-----------|------------|
+| **Medical Image Processing** | Vision Transformer (ViT), YOLO, U-Net |
+| **Feature Extraction** | Cross-Attention Mechanisms |
+| **Retrieval System** | FAISS / Pinecone (Case Retrieval), LangChain (Literature Search) |
+| **Language Model (LLM for Diagnosis)** | BioBERT |
+| **Deployment & Acceleration** | NVIDIA A5000 GPUs |
+
 
 ## Model Architecture
 - **Vision Transformer (ViT)** for **feature extraction**
+- **Object Detection Network (YOLO)** for **tumor/anomalies extraction**
+- **Segmentation Network (U-Net)** for **tissue segmentation**
+- **Multimodal Retrieval** for **retrieval-augmented diagnosis generation**
 - **Transformer Decoder** for **text generation**
 
+### **Model Framework**
+![Flowchart](/Framework.png)
+
+### Key Features:**
+
+- **Multimodal Retrieval:**  
+  - Uses **image embeddings** + **clinical keywords** to search a **vector database** of past cases & medical literature.  
+  - Implements **FAISS or Pinecone** for **efficient case retrieval**.  
+  - Uses **LangChain** to fetch **PubMed papers, clinical trial data, and structured radiology reports**.  
+
+- **Retrieval-Augmented Text Generation (RAG-inspired LLM Diagnosis):**  
+  - Instead of generating diagnostics purely from image features, the **LLM cross-references retrieved cases**.  
+  - Uses **retrieved reports to improve context, reduce hallucinations, and align with real-world diagnoses**.  
+  - Suggests **next steps** based on historical outcomes of similar cases.  
+
+- **Feature Extractor with Cross-Attention for Image-Text Alignment:**
+  -The Feature Extractor with Cross-Attention is a key component that aligns image features (from the Image Encoder) with language representations (from the Text Decoder) to enable accurate diagnosis text generation.
+  -Extracts image features from the Vision Transformer.
+  -Processes tokenized text inputs from the Text Decoder (BioBERT).
+  -Applies Cross-Attention Mechanism to align the two modalities.
+      Query, Key, Value Mechanism:
+      Query → Text tokens from the decoder.
+      Key, Value → Image features.
+      Computes attention scores to determine which image features are most relevant for each text token, ensuring the generated text is clinically meaningful and contextually aware.
+
 ## Dataset
-- **Primary Dataset**: Private Low Field MRI dataset (requires annotation)
+- **Primary Dataset**: Private Low Field MRI dataset (requires annotation), 500000 images for 10000 unhealthy subjects.
 
 ## Sample Inference Result
 
@@ -87,4 +114,3 @@ The generated output correctly identifies a hemorrhagic lesion in the parietal r
 The model correctly detects cortical dysplasia in the right temporal lobe and prior lobectomy, aligning with the true diagnosis of dysplasia and epilepsy.
 
 
-![Flowchart](/Flowchart.png)
