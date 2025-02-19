@@ -33,22 +33,22 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 ### **Key Components:**
 
 - **Feature Extractor with Cross-Attention for Image-Text Alignment:**
-  -The Feature Extractor with Cross-Attention is a key component that aligns image features (from the Image Encoder) with language representations (from the Text Decoder) to enable accurate diagnosis text generation.
-  -Extracts image features from the Vision Transformer.
-  -Processes tokenized text inputs from the Text Decoder (BioBERT).
-  -Applies Cross-Attention Mechanism to align the two modalities.
+  - The Feature Extractor with Cross-Attention is a key component that aligns image features (from the Image Encoder) with language representations (from the Text Decoder) to enable accurate diagnosis text generation.
+  - Extracts image features from the Vision Transformer.
+  - Processes tokenized text inputs from the Text Decoder (BioBERT).
+  - Applies Cross-Attention Mechanism to align the two modalities.
       Query, Key, Value Mechanism:
-      Query → Text tokens from the decoder.
-      Key, Value → Image features.
+      **Query** → Text tokens from the decoder.
+      **Key, Value** → Image features.
       Computes attention scores to determine which image features are most relevant for each text token, ensuring the generated text is clinically meaningful and contextually aware.
   
 - **Preprocessing** (Before Retrieval & Generation)
-  Text Normalization:
+  - Text Normalization:
   Convert medical terms into a standardized form (e.g., "GBM" → "Glioblastoma Multiforme"). Use RadLex ontologies for medical term standardization.
-  Clinical Embedding Augmentation:
+  - Clinical Embedding Augmentation:
   Combine image embeddings with structured clinical notes to enrich retrieval.
   Use BioBERT embeddings for text-based retrieval queries.
-  Query Expansion:
+  - Query Expansion:
   Expand user input (MRI observations) with synonyms, related conditions, and anatomical structures.
   Example: "Tumor in the left frontal lobe" → Expand to include “lesion,” “mass,” “neoplasm,” etc.
 
