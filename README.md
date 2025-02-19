@@ -32,6 +32,26 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 
 ### **Key Components:**
 
+- **Feature Extractor with Cross-Attention for Image-Text Alignment:**
+  -The Feature Extractor with Cross-Attention is a key component that aligns image features (from the Image Encoder) with language representations (from the Text Decoder) to enable accurate diagnosis text generation.
+  -Extracts image features from the Vision Transformer.
+  -Processes tokenized text inputs from the Text Decoder (BioBERT).
+  -Applies Cross-Attention Mechanism to align the two modalities.
+      Query, Key, Value Mechanism:
+      Query → Text tokens from the decoder.
+      Key, Value → Image features.
+      Computes attention scores to determine which image features are most relevant for each text token, ensuring the generated text is clinically meaningful and contextually aware.
+  
+- **Preprocessing** (Before Retrieval & Generation)
+  Text Normalization:
+  Convert medical terms into a standardized form (e.g., "GBM" → "Glioblastoma Multiforme"). Use RadLex ontologies for medical term standardization.
+  Clinical Embedding Augmentation:
+  Combine image embeddings with structured clinical notes to enrich retrieval.
+  Use BioBERT embeddings for text-based retrieval queries.
+  Query Expansion:
+  Expand user input (MRI observations) with synonyms, related conditions, and anatomical structures.
+  Example: "Tumor in the left frontal lobe" → Expand to include “lesion,” “mass,” “neoplasm,” etc.
+
 - **Multimodal Retrieval:**  
   - Uses **image embeddings** + **clinical keywords** to search a **vector database** of past cases & medical literature.  
   - Implements **FAISS or Pinecone** for **efficient case retrieval**.  
@@ -42,15 +62,14 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
   - Uses **retrieved reports to improve context, reduce hallucinations, and align with real-world diagnoses**.  
   - Suggests **next steps** based on historical outcomes of similar cases.  
 
-- **Feature Extractor with Cross-Attention for Image-Text Alignment:**
-  -The Feature Extractor with Cross-Attention is a key component that aligns image features (from the Image Encoder) with language representations (from the Text Decoder) to enable accurate diagnosis text generation.
-  -Extracts image features from the Vision Transformer.
-  -Processes tokenized text inputs from the Text Decoder (BioBERT).
-  -Applies Cross-Attention Mechanism to align the two modalities.
-      Query, Key, Value Mechanism:
-      Query → Text tokens from the decoder.
-      Key, Value → Image features.
-      Computes attention scores to determine which image features are most relevant for each text token, ensuring the generated text is clinically meaningful and contextually aware.
+- **Postprocessing** (After Generation)
+  - Factual Consistency Check:
+  Cross-verify generated diagnosis against retrieved case summaries. Use automated fact-checking models trained on radiology reports.
+  - Confidence Scoring & Uncertainty Detection:
+  Implement self-consistency voting across multiple LLM generations.
+  Flag ambiguous or low-confidence outputs for human radiologist review.
+  - Structured Summary Generation:
+  Convert unstructured text output into a structured diagnostic format.
 
 ## Dataset
 - **Primary Dataset**: Private Low Field MRI dataset (requires annotation), 500000 images for 10000 unhealthy subjects.
