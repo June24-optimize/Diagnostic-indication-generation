@@ -13,17 +13,17 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 ### **Tech Stack:**
 | Component | Technology |
 |-----------|------------|
-| **Medical Image Processing** | Vision Transformer (ViT), YOLO, U-Net |
+| **Medical Image Processing** | Vision Transformer (ViT), Synthseg, U-Net |
 | **Feature Extraction** | Cross-Attention Mechanisms |
-| **Retrieval System** | FAISS / Pinecone (Case Retrieval), LangChain (Literature Search) |
+| **Retrieval System** | FAISS (Case Retrieval), LangChain (Literature Search) |
 | **Language Model (LLM for Diagnosis)** | BioBERT |
 | **Deployment & Acceleration** | 5 NVIDIA A5000 GPUs |
 
 
 ## Model Architecture
 - **Vision Transformer (ViT)** for **feature extraction**
-- **Object Detection Network (YOLO)** for **tumor/anomalies extraction**
-- **Segmentation Network (U-Net)** for **tissue segmentation**
+- **Object Detection Network (Synthseg)** for **tumor/anomalies extraction**
+- **Segmentation Network (Synthseg+U-Net)** for **tissue segmentation**
 - **Multimodal Retrieval** for **retrieval-augmented diagnosis generation**
 - **Transformer Decoder** for **text generation**
 
@@ -54,7 +54,7 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 
 - **Multimodal Retrieval:**  
   - Uses **image embeddings** + **clinical keywords** to search a **vector database** of past cases & medical literature.  
-  - Implements **FAISS or Pinecone** for **efficient case retrieval**.  
+  - Implements **FAISS** for **efficient case retrieval**.  
   - Uses **LangChain** to fetch **PubMed papers, clinical trial data, and structured radiology reports**.  
 
 - **Retrieval-Augmented Text Generation (RAG-inspired LLM Diagnosis):**  
