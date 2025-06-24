@@ -16,8 +16,8 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
 | **Medical Image Processing** | Vision Transformer (ViT), Synthseg(for tumer segmentation) |
 | **Feature Extraction** | Cross-Attention Mechanisms |
 | **Retrieval System** | FAISS (Case Retrieval), LangChain (Literature Search) |
-| **Language Model (LLM for Diagnosis)** | BioGPT |
-| **Deployment & Acceleration** | 5 NVIDIA A5000 GPUs |
+| **Language Model (LLM for Diagnosis)** | xxxx |
+| **Deployment & Acceleration** | xxx NVIDIA A5000 GPUs |
 
 
 ## Model Architecture
@@ -72,7 +72,7 @@ This repository contains the implementation of a **Brain MRI Diagnostic Indicati
   Convert unstructured text output into a structured diagnostic format.
 
 ## Dataset
-- **Primary Dataset**: Private Low Field MRI dataset (requires annotation), 500000 images for 10000 unhealthy subjects.
+- **Primary Dataset**: Private Low Field MRI dataset (requires annotation), xxxx images for xxxx unhealthy subjects.
 
 ## Sample Inference Result
 
