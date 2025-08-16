@@ -1,75 +1,114 @@
 # Brain MRI Diagnostic Indication Generation Model
 
 ## Overview
-This repository contains the implementation of a **Brain MRI Diagnostic Indication Generation Model** using **Vision Transformer (ViT)** for image feature extraction and a **Transformer Decoder** for generating textual indications. The model is designed to assist radiologists by automatically generating clinical indications based on MRI scans.
+This system generates **diagnostic reports** and **VQA answers** from 3D medical scans (CT/MRI).  
+It fuses lesion/tissue **segmentations** with a **Med3DVLM** backbone to preserve long-range 3D context while steering the language model toward clinically relevant regions.
 
-## Features
-- **MRI Image Processing**: Supports DICOM and NIfTI formats with automated preprocessing.
-- **ViT for Feature Extraction**: Utilizes Vision Transformer to encode spatial and structural MRI features.
-- **Transformer Decoder for Text Generation**: Generates diagnostic indications based on extracted MRI embeddings.
-- **End-to-End Pipeline**: Includes preprocessing, model inference, and result visualization.
-- **Cloud Deployment Ready**: Compatible with FastAPI and TensorFlow Serving for production use.
+**Core idea:**  
+Efficient 3D encoder → dual-stream **MLP-Mixer projector** with segmentation-aware fusion → **LLM** (Qwen2.5-7B-Instruct via LoRA) → report/VQA.  
+An optional **retrieval step** grounds text in similar prior cases to reduce hallucinations.
 
-### **Tech Stack:**
-| Component | Technology |
-|-----------|------------|
-| **Medical Image Processing** | Vision Transformer (ViT), Synthseg(for tumer segmentation) |
-| **Feature Extraction** | Cross-Attention Mechanisms |
-| **Retrieval System** | FAISS (Case Retrieval), LangChain (Literature Search) |
-| **Language Model (LLM for Diagnosis)** | xxxx |
-| **Deployment & Acceleration** | xxx NVIDIA A5000 GPUs |
+---
+
+## Inputs & Outputs
+
+**Inputs**
+- 3D volume (NIfTI/DICOM)
+- Segmentation masks:
+  - **Anomaly masks** (tumor/stroke) — SynthSeg / U-Net
+  - **Tissue masks** — SynthSeg
+- Optional metadata (modality, phase, site)
+
+**Outputs**
+- Structured **diagnostic report** (Findings/Impression) with **uncertainty** and **evidence tags**
+- **VQA** answers (open-ended and closed-ended)
+
+---
+
+## Pipeline
+
+1. **Preprocess**
+   - Resample to `128 × 256 × 256`
+   - Intensity normalize (clip HU for CT)
+   - Run segmentation model → anomaly & tissue probability maps
+
+2. **ROI Token Derivation**
+   - Mask-aware pooling from encoder feature maps
+   - ROI descriptors: centroid, bbox, size, slice range
+   - Produces **segmentation-aware ROI tokens**
+
+3. **Image Encoder**
+   - Efficient 3D feature extractor (decomposed depthwise convolutions)
+   - Two token streams:
+     - High-level tokens (`32 × 768`)
+     - Low-level tokens (`256 × 384`)
+
+4. **Multi-Modal Projector (Dual MLP-Mixer + Seg-Aware Fusion)**
+   - Two parallel **MLP-Mixer** stacks (low/high hybrid)
+   - Fusion steps:
+     - Concatenate ROI tokens with low/high tokens
+     - **Mask gating**: drop low-importance tokens
+     - **Token reweight**: boost lesion-relevant tokens
+
+5. **(Optional) Multimodal Retrieval**
+   - Build SigLIP image/text index offline
+   - Retrieve top-K similar cases/reports at inference
+
+6. **LLM Decoder**
+   - **Qwen2.5-7B-Instruct** + LoRA adapters (base LLM frozen)
+   - Inputs: fused tokens (+ optional retrieval evidence)
+   - Outputs: diagnostic report + VQA answers
+
+---
+
+## Training Stages
+
+1. **Contrastive Pretraining**
+   - Image Encoder + ClinicalBERT
+   - SigLIP loss for 3D image ↔ report alignment
+
+2. **Projector Pretraining**
+   - Freeze encoders, train dual MLP-Mixer projector
+   - Teacher-forced LM loss with LLM frozen
+
+3. **VLM Fine-Tuning**
+   - Train projector + LoRA only
+   - Mix report generation and VQA tasks
+   - Include retrieval grounding
+
+---
+
+## Inference Flow
+1. Preprocess & segment input volume
+2. Image Encoder → low/high tokens + seg-ROI tokens
+3. Projector (dual Mixer + seg fusion) → fused tokens
+4. (Optional) Retrieve evidence via SigLIP index
+5. LLM (+LoRA) generates:
+   - Diagnostic report (with uncertainty/evidence tags)
+   - VQA answers
+
+---
+
+## Key Design Choices
+- **Image Encoder** — scales to large tiles while preserving 3D context
+- **SigLIP** — better alignment in small medical datasets
+- **Dual MLP-Mixer** — preserves both low-level detail & high-level semantics
+- **Segmentation-aware fusion** — focuses LLM on clinically relevant regions
+- **Retrieval grounding** — reduces hallucinations, improves rare-case handling
+- **Normalization** — BN in segmentation heads; LayerNorm in Transformer/LLM paths
+
+---
+
+## Evaluation Metrics
+- **Retrieval**: Recall@K (R@1, R@5, R@10)
+- **Report/VQA (open-ended)**: BLEU, ROUGE, METEOR, BERTScore
+- **VQA (closed-ended)**: Accuracy
+- **Additional**: Uncertainty calibration (ECE), entity grounding coverage
 
 
 ## Model Architecture
-- **Vision Transformer (ViT)** for **feature extraction**
-- **Object Detection Network (Synthseg)** for **tumor/anomalies extraction**
-- **Segmentation Network (Synthseg+U-Net)** for **tissue segmentation**
-- **Multimodal Retrieval** for **retrieval-augmented diagnosis generation**
-- **Transformer Decoder** for **text generation**
 
-### **Model Framework**
 ![Flowchart](/Framework.png)
-
-### **Key Components:**
-
-- **Feature Extractor with Cross-Attention for Image-Text Alignment:**
-  - The Feature Extractor with Cross-Attention is a key component that aligns image features (from the Image Encoder) with language representations (from the Text Decoder) to enable accurate diagnosis text generation.
-  - Extracts image features from the Vision Transformer.
-  - Processes tokenized text inputs from the Text Decoder (BioGPT).
-  - Applies Cross-Attention Mechanism to align the two modalities.
-      Query, Key, Value Mechanism:
-      **Query** → Text tokens from the decoder.
-      **Key, Value** → Image features.
-      Computes attention scores to determine which image features are most relevant for each text token, ensuring the generated text is clinically meaningful and contextually aware.
-  
-- **Preprocessing** (Before Retrieval & Generation)
-  - Text Normalization:
-  Convert medical terms into a standardized form (e.g., "GBM" → "Glioblastoma Multiforme"). Use RadLex ontologies for medical term standardization.
-  - Clinical Embedding Augmentation:
-  Combine image embeddings with structured clinical notes to enrich retrieval.
-  Use BioGPT embeddings for text-based retrieval queries.
-  - Query Expansion:
-  Expand user input (MRI observations) with synonyms, related conditions, and anatomical structures.
-  Example: "Tumor in the left frontal lobe" → Expand to include “lesion,” “mass,” “neoplasm,” etc.
-
-- **Multimodal Retrieval:**  
-  - Uses **image embeddings** + **clinical keywords** to search a **vector database** of past cases & medical literature.  
-  - Implements **FAISS** for **efficient case retrieval**.  
-  - Uses **LangChain** to fetch **PubMed papers, clinical trial data, and structured radiology reports**.  
-
-- **Retrieval-Augmented Text Generation (RAG-inspired LLM Diagnosis):**  
-  - Instead of generating diagnostics purely from image features, the **LLM cross-references retrieved cases**.  
-  - Uses **retrieved reports to improve context, reduce hallucinations, and align with real-world diagnoses**.  
-  - Suggests **next steps** based on historical outcomes of similar cases.  
-
-- **Postprocessing** (After Generation)
-  - Factual Consistency Check:
-  Cross-verify generated diagnosis against retrieved case summaries. Use automated fact-checking models trained on radiology reports.
-  - Confidence Scoring & Uncertainty Detection:
-  Implement self-consistency voting across multiple LLM generations.
-  Flag ambiguous or low-confidence outputs for human radiologist review.
-  - Structured Summary Generation:
-  Convert unstructured text output into a structured diagnostic format.
 
 ## Dataset
 - **Primary Dataset**: Private Low Field MRI dataset (requires annotation), xxxx images for xxxx unhealthy subjects.
