@@ -9,75 +9,60 @@ Efficient 3D encoder → dual-stream **MLP-Mixer projector** with segmentation-a
 An optional **retrieval step** grounds text in similar prior cases to reduce hallucinations.
 
 ---
-
 ## Inputs & Outputs
-
 **Inputs**
 - 3D volume (NIfTI/DICOM)
 - Segmentation masks:
   - **Anomaly masks** (tumor/stroke) — SynthSeg / U-Net
   - **Tissue masks** — SynthSeg
 - Optional metadata (modality, phase, site)
-
 **Outputs**
 - Structured **diagnostic report** (Findings/Impression) with **uncertainty** and **evidence tags**
 - **VQA** answers (open-ended and closed-ended)
 
 ---
-
 ## Pipeline
-
 1. **Preprocess**
    - Resample to `128 × 256 × 256`
    - Intensity normalize (clip HU for CT)
    - Run segmentation model → anomaly & tissue probability maps
-
 2. **ROI Token Derivation**
    - Mask-aware pooling from encoder feature maps
    - ROI descriptors: centroid, bbox, size, slice range
    - Produces **segmentation-aware ROI tokens**
-
 3. **Image Encoder**
    - Efficient 3D feature extractor (decomposed depthwise convolutions)
    - Two token streams:
      - High-level tokens (`32 × 768`)
      - Low-level tokens (`256 × 384`)
-
 4. **Multi-Modal Projector (Dual MLP-Mixer + Seg-Aware Fusion)**
    - Two parallel **MLP-Mixer** stacks (low/high hybrid)
    - Fusion steps:
      - Concatenate ROI tokens with low/high tokens
      - **Mask gating**: drop low-importance tokens
      - **Token reweight**: boost lesion-relevant tokens
-
 5. **(Optional) Multimodal Retrieval**
    - Build SigLIP image/text index offline
    - Retrieve top-K similar cases/reports at inference
-
 6. **LLM Decoder**
    - **Qwen2.5-7B-Instruct** + LoRA adapters (base LLM frozen)
    - Inputs: fused tokens (+ optional retrieval evidence)
    - Outputs: diagnostic report + VQA answers
 
 ---
-
 ## Training Stages
-
 1. **Contrastive Pretraining**
    - Image Encoder + ClinicalBERT
    - SigLIP loss for 3D image ↔ report alignment
-
 2. **Projector Pretraining**
    - Freeze encoders, train dual MLP-Mixer projector
    - Teacher-forced LM loss with LLM frozen
-
 3. **VLM Fine-Tuning**
    - Train projector + LoRA only
    - Mix report generation and VQA tasks
    - Include retrieval grounding
 
 ---
-
 ## Inference Flow
 1. Preprocess & segment input volume
 2. Image Encoder → low/high tokens + seg-ROI tokens
@@ -88,7 +73,6 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
    - VQA answers
 
 ---
-
 ## Key Design Choices
 - **Image Encoder** — scales to large tiles while preserving 3D context
 - **SigLIP** — better alignment in small medical datasets
@@ -98,7 +82,6 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
 - **Normalization** — BN in segmentation heads; LayerNorm in Transformer/LLM paths
 
 ---
-
 ## Evaluation Metrics
 - **Retrieval**: Recall@K (R@1, R@5, R@10)
 - **Report/VQA (open-ended)**: BLEU, ROUGE, METEOR, BERTScore
@@ -108,7 +91,7 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
 
 ## Model Architecture
 
-![Flowchart](/Framework.png)
+![Flowchart](/framework.png)
 
 ## Dataset
 - **Primary Dataset**: Private Low Field MRI dataset (requires annotation), xxxx images for xxxx unhealthy subjects.
