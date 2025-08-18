@@ -13,7 +13,7 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
 **Inputs**
 - 3D volume (NIfTI/DICOM)
 - Segmentation masks:
-  - **Anomaly masks** (tumor/stroke) — SynthSeg / U-Net
+  - **Anomaly masks** (tumor/stroke) — SynthSeg with a conventional anomaly detection method
   - **Tissue masks** — SynthSeg
 - Optional metadata (modality, phase, site)
 **Outputs**
