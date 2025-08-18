@@ -1,7 +1,7 @@
 # Brain MRI Diagnostic Indication Generation Model
 
 ## Overview
-This system generates **diagnostic reports** and **VQA answers** from 3D medical scans (CT/MRI).  
+This system generates **diagnostic reports** and **VQA answers** from 3D medical scans (brain MRI as an example).  
 It fuses lesion/tissue **segmentations** with a **Med3DVLM** backbone to preserve long-range 3D context while steering the language model toward clinically relevant regions.
 
 **Core idea:**  
@@ -24,7 +24,7 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
 ## Pipeline
 1. **Preprocess**
    - Resample to `128 × 256 × 256`
-   - Intensity normalize (clip HU for CT)
+   - Intensity normalize (rescaled for MRI)
    - Run segmentation model → anomaly & tissue probability maps
 2. **ROI Token Derivation**
    - Mask-aware pooling from encoder feature maps
