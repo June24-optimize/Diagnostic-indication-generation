@@ -94,31 +94,31 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
 ---
 ## Evaluation Metrics
 - **Datasets**
-- Primary dataset: Low-field brain MRI (xxxx volumes; annotated with lesion/tissue labels + diagnostic reports).
-- External validation: Public M3D dataset (subset of CT/MRI scans with paired reports and VQA)
-- Splits: 70% training, 15% validation, 15% testing.
-- Preprocessing: all volumes resampled to 128 × 256 × 256; segmentation masks from SynthSeg and anomaly detection pipeline.
+  - Primary dataset: Low-field brain MRI (xxxx volumes; annotated with lesion/tissue labels + diagnostic reports).
+  - External validation: Public M3D dataset (subset of CT/MRI scans with paired reports and VQA)
+  - Splits: 70% training, 15% validation, 15% testing.
+  - Preprocessing: all volumes resampled to 128 × 256 × 256; segmentation masks from SynthSeg and anomaly detection pipeline.
 - **Baselines**
-- 2D CLIP-style VLM: Slice-level encoder + ClinicalBERT (contrastive only).
-- M3D-LaMed: CLIP-pretrained 3D encoder with linear projector
-- Med3DVLM: state-of-the-art 3D VLM baseline
-- Ours: Segmentation-aware fusion + retrieval grounding.
+  - 2D CLIP-style VLM: Slice-level encoder + ClinicalBERT (contrastive only).
+  - M3D-LaMed: CLIP-pretrained 3D encoder with linear projector
+  - Med3DVLM: state-of-the-art 3D VLM baseline
+  - Ours: Segmentation-aware fusion + retrieval grounding.
 
 - **Image–Text Retrieval**: 
-- Baseline 2D VLM: R@1 = 12%; M3D-LaMed: R@1 = 19%; Med3DVLM: R@1 = 61%; Ours (segmentation-aware + retrieval): R@1 = 67%, R@5 = 90%, R@10 = 95%.
+  - Baseline 2D VLM: R@1 = 12%; M3D-LaMed: R@1 = 19%; Med3DVLM: R@1 = 61%; Ours (segmentation-aware + retrieval): R@1 = 67%, R@5 = 90%, R@10 = 95%.
 - **Diagnostic Report Generation**: BLEU, ROUGE, METEOR, BERTScore
-- Baseline: BLEU = 12.8, METEOR = 13.5;
-- M3D-LaMed: BLEU = 15.1, METEOR = 14.3;
-- Med3DVLM: BLEU = 36.9, METEOR = 36.4;
-- Ours: BLEU = 39.2, METEOR = 38.1, BERTScore = 89.2.
+  - Baseline: BLEU = 12.8, METEOR = 13.5;
+  - M3D-LaMed: BLEU = 15.1, METEOR = 14.3;
+  - Med3DVLM: BLEU = 36.9, METEOR = 36.4;
+  - Ours: BLEU = 39.2, METEOR = 38.1, BERTScore = 89.2.
 - **VQA**: Closed-ended (accuracy) and open-ended (METEOR, BLEU).
-- M3D-LaMed: Closed-ended acc = 75.8%; Open-ended METEOR = 33.6;
-- Med3DVLM: Closed-ended acc = 79.9%; Open-ended METEOR = 36.8;
-- Ours: Closed-ended acc = 82.4%; Open-ended METEOR = 38.9%;
+  - M3D-LaMed: Closed-ended acc = 75.8%; Open-ended METEOR = 33.6;
+  - Med3DVLM: Closed-ended acc = 79.9%; Open-ended METEOR = 36.8;
+  - Ours: Closed-ended acc = 82.4%; Open-ended METEOR = 38.9%;
 - **Additional**: Uncertainty calibration (ECE)
--  Baseline models: ECE ~ 0.22–0.25;
--  Ours: ECE = 0.14, showing better reliability in predictions.
-
+  -  Baseline models: ECE ~ 0.22–0.25;
+  -  Ours: ECE = 0.14, showing better reliability in predictions.
+  
 
 ## Sample Inference Result
 
