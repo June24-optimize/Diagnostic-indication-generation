@@ -53,6 +53,12 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
    - Inputs: fused tokens (+ optional retrieval evidence)
    - Outputs: diagnostic report + VQA answers
 
+
+## Model Architecture
+
+![Flowchart](/framework.png)
+
+
 ---
 ## Training Stages
 1. **Contrastive Pretraining**
@@ -113,13 +119,6 @@ An optional **retrieval step** grounds text in similar prior cases to reduce hal
 -  Baseline models: ECE ~ 0.22–0.25;
 -  Ours: ECE = 0.14, showing better reliability in predictions.
 
-
-## Model Architecture
-
-![Flowchart](/framework.png)
-
-## Dataset
-- **Primary Dataset**: Private Low Field MRI dataset (requires annotation), xxxx images for xxxx unhealthy subjects.
 
 ## Sample Inference Result
 
